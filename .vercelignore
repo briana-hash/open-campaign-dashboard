@@ -1,0 +1,7 @@
+# Only the page, the stylesheet and the API go to Vercel.
+.local-data
+.claude
+.env*
+dev-server.mjs
+README.md
+REFRESH.md

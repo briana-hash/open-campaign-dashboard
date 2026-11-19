@@ -22,9 +22,11 @@ A two-tab dashboard for SideShift campaigns, built in the SideShift Liquid Metal
 
 ## Deploy (Vercel)
 
-1. Import this repo into Vercel and add a Blob store to the project (this sets `BLOB_READ_WRITE_TOKEN`).
-2. Set two env vars to long random strings: `TEAM_TOKEN` (people type this to open the Team tab) and `SYNC_TOKEN` (used only by the sync job).
-3. Run the sync in [REFRESH.md](REFRESH.md) to load campaigns, then open the Team tab and fill in targets, end dates, budgets and contracts.
+Live at https://open-campaign-dashboard.vercel.app (Vercel project `open-campaign-dashboard`, private Blob store `open-campaigns-data`).
+
+- Env vars: `BLOB_READ_WRITE_TOKEN` (set by the Blob store), `TEAM_TOKEN` (people type this to open the Team tab) and `SYNC_TOKEN` (used only by the sync job).
+- Redeploy: `npx vercel@66.4.0 deploy --prod`. `.vercelignore` keeps local preview data and dev files out of the upload.
+- Load campaigns with the sync in [REFRESH.md](REFRESH.md), then fill in targets, end dates, budgets and contracts in the Team tab.
 
 ## Local preview
 
