@@ -1,0 +1,214 @@
+/*
+ * SideShift "Liquid Metal" design system
+ * Captured from app.sideshift.app/campaigns on 2026-11-12.
+ * Use these tokens and component classes for every creator community site.
+ * Font: Geist (https://fonts.google.com/specimen/Geist)
+ */
+
+:root {
+  /* ---------- Type ---------- */
+  --ds-font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --ds-font-mono: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --ds-tracking: -0.02em;            /* applied to nearly all UI text */
+
+  /* ---------- Text ---------- */
+  --ds-text-primary: #202020;
+  --ds-text-secondary: #707070;
+  --ds-text-tertiary: #979a9b;
+  --ds-text-muted-cool: #66758c;
+  --ds-text-inverse: rgba(255, 255, 255, 0.9);
+  --ds-text-inverse-muted: rgba(255, 255, 255, 0.65);
+
+  /* ---------- Surfaces ---------- */
+  --ds-surface: #ffffff;
+  --ds-surface-secondary: #fafafa;
+  --ds-surface-subtle: #f7f7f7;
+  --ds-surface-page: #f6f6f6;
+  --ds-surface-rail: #f0f0f0;         /* left icon rail / sidebar */
+  --ds-surface-muted: rgba(123, 129, 140, 0.05);
+  --ds-surface-inverse: #202020;
+  --ds-chip-surface: #f5f5f6;
+  --ds-chip-border: #e5e6e8;
+  --ds-workspace-gradient: linear-gradient(180deg, #fcfcfc 0%, #f6f6f6 100%);
+
+  /* ---------- Borders ---------- */
+  --ds-border: rgba(32, 32, 32, 0.08);
+  --ds-border-strong: rgba(32, 32, 32, 0.16);
+  --ds-border-soft: rgba(112, 112, 112, 0.12);
+  --ds-border-inverse: rgba(255, 255, 255, 0.15);
+
+  /* ---------- Brand / status colors ---------- */
+  --ds-blue: #3c83f9;
+  --ds-blue-strong: #2563eb;
+  --ds-red: #ff2b3a;
+  --ds-green: #10c13d;
+  --ds-orange: #e87135;               /* "Pay per Creative" pill */
+  --ds-amber: #e9a23b;
+  --ds-yellow: #ffe68a;
+  --ds-purple: #7b61e0;
+  --ds-gray: #7b818c;
+  --ds-highlight: #fff5c4;            /* text mark / highlight */
+
+  /* ---------- Metal ---------- */
+  --ds-metal-edge: #a3a7af;
+  --ds-metal-mid: #c8cbd0;
+  --ds-metal-face: #ffffff;
+  /* The rim: a diagonal light/dark banded gradient that reads as brushed chrome */
+  --ds-metal-rim-dark: linear-gradient(110deg, #4c4c4c 0%, #b8b8b8 25%, #727272 50%, #b8b8b8 75%, #3f3f3f 100%);
+  --ds-metal-rim-blue: linear-gradient(110deg, #6ea6ff 0%, #d7e6ff 25%, #8ab7ff 50%, #d7e6ff 75%, #5d98fa 100%);
+  --ds-metal-rim-light: linear-gradient(110deg, #a3a7af 0%, #ffffff 25%, #c8cbd0 50%, #ffffff 75%, #a3a7af 100%);
+  /* The sheen: two soft white bands laid over a flat fill */
+  --ds-sheen: linear-gradient(103deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.14) 25%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.14) 75%, rgba(255,255,255,0) 100%);
+  /* Text shimmer on metal buttons */
+  --ds-text-sheen: linear-gradient(270deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%), linear-gradient(90deg, rgba(255,255,255,0.9), rgba(255,255,255,0.9));
+  /* Blue glow used on hero / featured surfaces */
+  --ds-hero-glow: radial-gradient(151.63% 100% at 50% 100%, #3c83f980 0%, #2d62bb60 25%, #1e427d40 50%, #01416300 100%), radial-gradient(100% 100% at 50% 0%, #fff3 0%, #8080801a 50%, #01416300 100%);
+  /* Dark stat panel (right side of campaign cards) */
+  --ds-panel-dark: linear-gradient(90deg, #0a1a3a 0%, #050b1a 55%, #000000 100%);
+
+  /* ---------- Radius ---------- */
+  --ds-radius-xs: 4px;
+  --ds-radius-sm: 8px;
+  --ds-radius-control: 10px;          /* tabs, segmented controls */
+  --ds-radius-md: 12px;               /* buttons, icon tiles, menus */
+  --ds-radius-lg: 16px;               /* inner stat rows */
+  --ds-radius-xl: 20px;
+  --ds-radius-2xl: 24px;              /* cards */
+  --ds-radius-full: 9999px;           /* pills / badges */
+
+  /* ---------- Shadows (cool navy tint #014163) ---------- */
+  --ds-shadow-xs: 0 1px 2px 0 #6865650f;
+  --ds-shadow-sm: 0 2px 4px -1px #01416314;
+  --ds-shadow-md: 0 4px 8px -2px #0141631a, 0 2px 4px -1px #0141630f;
+  --ds-shadow-lg: 0 12px 24px -4px #0141631a, 0 4px 8px -2px #0141630a;
+  --ds-shadow-card: 0 2px 4px -1px #01416314, 0 0 0 1px rgba(32, 32, 32, 0.08);
+  --ds-shadow-ring: 0 0 0 1px rgba(32, 32, 32, 0.08);
+  --ds-shadow-control: 0 2px 3px 0 rgba(104, 101, 101, 0.16);
+  --ds-shadow-menu: 0 12px 24px -6px #01416321, 0 3px 6px -2px #01416312;
+  --ds-shadow-modal: inset 0 0 0 1px #fff, 0 24px 48px #0003;
+}
+
+/* ================= Base ================= */
+body {
+  font-family: var(--ds-font-sans);
+  color: var(--ds-text-primary);
+  background: var(--ds-surface-page);
+  letter-spacing: var(--ds-tracking);
+  -webkit-font-smoothing: antialiased;
+}
+.ds-title    { font-size: 23px; font-weight: 550; letter-spacing: -0.02em; }
+.ds-heading  { font-size: 18px; font-weight: 500; letter-spacing: -0.02em; }
+.ds-body     { font-size: 14px; font-weight: 400; }
+.ds-label    { font-size: 12px; font-weight: 400; color: var(--ds-text-secondary); }
+.ds-label-strong { font-size: 13px; font-weight: 600; letter-spacing: -0.02em; }
+.ds-stat     { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
+.ds-stat-xl  { font-size: 32px; font-weight: 700; letter-spacing: -0.03em; }
+
+/* ================= Metal button =================
+   Layers: ::before = chrome rim (full size), ::after = fill + sheen inset 1px,
+   label = shimmer-clipped white text. Variants swap the rim + fill.        */
+.ds-btn {
+  --rim: var(--ds-metal-rim-dark);
+  --fill: #000;
+  position: relative; isolation: isolate;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 32px; padding: 8px 12px;
+  border: 0; border-radius: var(--ds-radius-md);
+  font: 600 14px/1 var(--ds-font-sans); letter-spacing: -0.02em;
+  color: var(--ds-text-inverse); background: transparent; cursor: pointer;
+  transition: transform .15s ease-out, filter .15s ease-out;
+}
+.ds-btn::before {
+  content: ""; position: absolute; inset: 0; z-index: -2;
+  border-radius: inherit; background: var(--rim);
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.24);
+}
+.ds-btn::after {
+  content: ""; position: absolute; inset: 1px; z-index: -1;
+  border-radius: calc(var(--ds-radius-md) - 1px);
+  background: var(--ds-sheen), var(--fill);
+}
+.ds-btn > .ds-btn-label {
+  background: var(--ds-text-sheen);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.ds-btn:hover  { filter: brightness(1.08); }
+.ds-btn:active { transform: scale(0.98); }
+.ds-btn:focus-visible { outline: none; box-shadow: 0 0 0 2px #fff, 0 0 0 4px #3b82f680; }
+.ds-btn--lg   { height: 40px; }
+.ds-btn--blue { --rim: var(--ds-metal-rim-blue); --fill: var(--ds-blue); }
+.ds-btn--blue::before { box-shadow: var(--ds-shadow-control); }
+
+/* Light "silver" control: tabs, Templates, secondary buttons */
+.ds-control {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 36px; padding: 0 12px;
+  border: 1px solid var(--ds-border); border-radius: var(--ds-radius-control);
+  background: var(--ds-surface); color: var(--ds-text-primary);
+  font: 600 14px/1 var(--ds-font-sans); letter-spacing: -0.02em;
+  box-shadow: var(--ds-shadow-control); cursor: pointer;
+}
+.ds-control[aria-selected="false"] { background: transparent; border-color: transparent; box-shadow: none; color: var(--ds-text-secondary); }
+.ds-count { display: inline-grid; place-items: center; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 9999px; background: var(--ds-surface-inverse); color: #fff; font-size: 10px; font-weight: 600; }
+
+/* ================= Pills / badges ================= */
+.ds-pill {
+  --fill: var(--ds-orange);
+  display: inline-flex; align-items: center; height: 20px; padding: 0 8px;
+  border: 1px solid #fff; border-radius: var(--ds-radius-full);
+  background: var(--ds-sheen), var(--fill);
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.12);
+  color: var(--ds-text-inverse); font: 600 12px/1 var(--ds-font-sans); letter-spacing: -0.02em;
+}
+.ds-pill--blue   { --fill: var(--ds-blue); }
+.ds-pill--green  { --fill: var(--ds-green); }
+.ds-pill--purple { --fill: var(--ds-purple); }
+
+/* Outlined status chip, e.g. "Off Marketplace" (red) / "On Marketplace" (green) */
+.ds-status {
+  --c: var(--ds-red);
+  display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 4px 8px 4px 4px;
+  border: 1px solid color-mix(in srgb, var(--c) 20%, transparent);
+  background: color-mix(in srgb, var(--c) 5%, transparent);
+  border-radius: var(--ds-radius-full); color: var(--c);
+  font: 600 13px/1 var(--ds-font-sans); letter-spacing: -0.02em;
+}
+.ds-status--green { --c: var(--ds-green); }
+
+/* ================= Cards ================= */
+.ds-card {
+  background: var(--ds-surface-secondary);
+  border-radius: var(--ds-radius-2xl);
+  box-shadow: var(--ds-shadow-card);
+  overflow: hidden;
+}
+.ds-stat-row {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--ds-border-soft); border-radius: var(--ds-radius-lg);
+  box-shadow: 0 2px 3px 0 rgba(104, 101, 101, 0.04);
+}
+.ds-stat-row > * + * { border-left: 1px solid var(--ds-border-soft); }
+/* Small metal icon tile next to a stat */
+.ds-icon-tile {
+  display: grid; place-items: center; width: 32px; height: 32px;
+  border-radius: var(--ds-radius-md);
+  background: linear-gradient(180deg, #fff 0%, #f3f4f6 100%);
+  box-shadow: 0 0 0 1px var(--ds-border), 0 2px 3px 0 rgba(104, 101, 101, 0.16), inset 0 1px 0 #fff;
+  color: var(--ds-text-primary);
+}
+/* Dark navy-to-black panel with big white number */
+.ds-panel-dark {
+  background: var(--ds-panel-dark); color: #fff;
+  display: grid; place-items: center; align-content: center; gap: 4px; padding: 0 24px;
+}
+
+/* ================= Menus / modals / inputs ================= */
+.ds-menu  { background: #fff; border: 1px solid rgba(123,129,140,.3); border-radius: var(--ds-radius-md); box-shadow: var(--ds-shadow-menu); }
+.ds-modal { background: #fff; border-radius: var(--ds-radius-2xl); box-shadow: var(--ds-shadow-modal); }
+.ds-input {
+  height: 32px; padding: 0 10px; border-radius: var(--ds-radius-sm);
+  border: 1px solid var(--ds-border-strong); background: var(--ds-surface);
+  font: 400 14px var(--ds-font-sans); color: var(--ds-text-primary);
+}
+.ds-input:focus { outline: none; border-color: var(--ds-blue); box-shadow: 0 0 0 3px #3c83f926; }

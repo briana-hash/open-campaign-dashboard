@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open Campaigns · SideShift</title>
+<meta name="description" content="SideShift campaigns open for creators right now: open spots, how long each has run, and how long is left.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;550;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/liquid-metal.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background: var(--ds-workspace-gradient), var(--ds-surface-page); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 32px 24px 64px; }
+  header.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand h1 { margin: 0; }
+  .brand p { margin: 2px 0 0; }
+  .tabs { display: inline-flex; gap: 4px; padding: 4px; border-radius: 12px; background: var(--ds-surface-rail); }
+  .hero { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-bottom: 24px; overflow: hidden; }
+  .hero > div { padding: 16px 20px; display: grid; gap: 4px; }
+  .hero .ds-panel-dark { place-items: start; padding: 16px 20px; }
+  .hero .ds-panel-dark .ds-label { color: var(--ds-text-inverse-muted); }
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+  .toolbar .ds-input { min-width: 220px; flex: 1; max-width: 320px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  .camp { padding: 20px; display: grid; gap: 14px; align-content: start; }
+  .camp-head { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+  .camp-head h3 { margin: 2px 0 0; }
+  .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: var(--ds-radius-full); background: var(--ds-chip-surface); border: 1px solid var(--ds-chip-border); font-size: 12px; font-weight: 500; color: var(--ds-text-secondary); }
+  .stats { grid-auto-flow: column; }
+  .stats > div { padding: 10px 12px; display: grid; gap: 2px; min-width: 0; }
+  .stats .ds-stat { white-space: nowrap; }
+  .meter { height: 6px; border-radius: 9999px; background: var(--ds-surface-rail); overflow: hidden; }
+  .meter > span { display: block; height: 100%; background: var(--ds-blue); border-radius: inherit; }
+  .meter.warn > span { background: var(--ds-amber); }
+  .meter.over > span { background: var(--ds-red); }
+  .row-between { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+  .muted { color: var(--ds-text-secondary); }
+  .tbd { color: var(--ds-text-tertiary); font-weight: 500; }
+  .empty { padding: 40px 24px; text-align: center; display: grid; gap: 8px; justify-items: center; }
+  .foot { margin-top: 24px; }
+  .countdown { font-variant-numeric: tabular-nums; }
+  .ds-status--amber { --c: var(--ds-amber); }
+  .ds-status--gray { --c: var(--ds-gray); }
+  .ds-status--blue { --c: var(--ds-blue); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; margin-left: 4px; }
+  /* Team table */
+  .table-card { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-weight: 500; font-size: 12px; color: var(--ds-text-secondary); padding: 12px; border-bottom: 1px solid var(--ds-border); white-space: nowrap; background: var(--ds-surface); position: sticky; top: 0; }
+  td { padding: 12px; border-bottom: 1px solid var(--ds-border-soft); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  td .sub { font-size: 12px; color: var(--ds-text-secondary); margin-top: 2px; }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  a { color: var(--ds-blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  /* Modal */
+  dialog { border: 0; padding: 0; width: min(560px, calc(100vw - 32px)); max-height: calc(100vh - 32px); }
+  dialog::backdrop { background: rgba(10, 26, 58, 0.35); backdrop-filter: blur(2px); }
+  form.edit { padding: 24px; display: grid; gap: 14px; }
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .fields .full { grid-column: 1 / -1; }
+  label.f { display: grid; gap: 4px; font-size: 12px; color: var(--ds-text-secondary); }
+  label.f .ds-input { width: 100%; }
+  textarea.ds-input { height: 72px; padding: 8px 10px; resize: vertical; }
+  .check { display: flex; gap: 8px; align-items: center; font-size: 14px; }
+  .section-label { font-size: 13px; font-weight: 600; margin: 4px 0 -4px; }
+  .lock { max-width: 420px; margin: 40px auto; padding: 28px; display: grid; gap: 12px; }
+  .lock .ds-input { width: 100%; height: 36px; }
+  .err { color: var(--ds-red); font-size: 13px; min-height: 18px; }
+  [hidden] { display: none !important; }
+  @media (max-width: 760px) {
+    .wrap { padding: 20px 16px 48px; }
+    .hero { grid-template-columns: 1fr 1fr; }
+    .grid { grid-template-columns: 1fr; }
+    .stats { grid-auto-flow: row; }
+    .stats > * + * { border-left: 0 !important; border-top: 1px solid var(--ds-border-soft); }
+    .fields { grid-template-columns: 1fr; }
+    .toolbar .ds-input { max-width: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="ds-icon-tile" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg>
+      </div>
+      <div>
+        <h1 class="ds-title">Open Campaigns</h1>
+        <p class="ds-label">SideShift campaigns taking creators right now</p>
+      </div>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="ds-control" role="tab" id="tab-board" aria-selected="true">Creators</button>
+      <button class="ds-control" role="tab" id="tab-team" aria-selected="false">Team</button>
+    </div>
+  </header>
+
+  <!-- ============ Creator board ============ -->
+  <main id="board">
+    <section class="ds-card hero" id="board-hero"></section>
+    <div class="toolbar">
+      <input class="ds-input" id="board-q" type="search" placeholder="Search brand or campaign" aria-label="Search campaigns">
+      <div class="tabs" id="board-type" role="tablist" aria-label="Campaign type">
+        <button class="ds-control" data-v="" aria-selected="true">All</button>
+        <button class="ds-control" data-v="ugc" aria-selected="false">UGC</button>
+        <button class="ds-control" data-v="influencer" aria-selected="false">Influencer</button>
+      </div>
+    </div>
+    <div class="grid" id="board-grid"></div>
+    <p class="ds-label foot" id="board-foot"></p>
+  </main>
+
+  <!-- ============ Team ============ -->
+  <main id="team" hidden>
+    <form class="ds-card lock" id="lock">
+      <h2 class="ds-heading" style="margin:0">Team view</h2>
+      <p class="ds-body muted" style="margin:0">Budgets, brand contracts and creator targets. Enter the team token to open it. It stays saved in this browser only.</p>
+      <input class="ds-input" id="token" type="password" autocomplete="off" placeholder="Team token" aria-label="Team token">
+      <div class="err" id="lock-err"></div>
+      <button class="ds-btn ds-btn--lg" type="submit"><span class="ds-btn-label">Open team view</span></button>
+    </form>
+
+    <div id="team-body" hidden>
+      <section class="ds-card hero" id="team-hero"></section>
+      <div class="toolbar">
+        <input class="ds-input" id="team-q" type="search" placeholder="Search brand or campaign" aria-label="Search campaigns">
+        <div class="tabs" id="team-filter" role="tablist" aria-label="Filter">
+          <button class="ds-control" data-v="" aria-selected="true">All</button>
+          <button class="ds-control" data-v="board" aria-selected="false">On board</button>
+          <button class="ds-control" data-v="missing" aria-selected="false">Missing info</button>
+        </div>
+        <span style="flex:1"></span>
+        <button class="ds-control" id="signout" type="button">Lock</button>
+      </div>
+      <div class="ds-card table-card">
+        <table>
+          <thead><tr>
+            <th>Campaign</th><th>Creators</th><th>Open spots</th><th>Running</th><th>Time left</th>
+            <th>Budget</th><th>Brand contract</th><th></th>
+          </tr></thead>
+          <tbody id="team-rows"></tbody>
+        </table>
+      </div>
+      <p class="ds-label foot" id="team-foot"></p>
+    </div>
+  </main>
+</div>
+
+<dialog class="ds-modal" id="editor">
+  <form class="edit" id="edit-form" method="dialog">
+    <div>
+      <h2 class="ds-heading" style="margin:0" id="edit-title">Edit campaign</h2>
+      <p class="ds-label" style="margin:4px 0 0" id="edit-sub"></p>
+    </div>
+    <div class="fields">
+      <label class="check full"><input type="checkbox" name="showOnBoard"> Show on the public creator board</label>
+      <label class="f full">Name creators see (optional)<input class="ds-input" name="displayName" maxlength="80"></label>
+      <label class="f">Creators the brand wants<input class="ds-input" name="targetCreators" type="number" min="0" step="1"></label>
+      <label class="f">Campaign end date<input class="ds-input" name="endsAt" type="date"></label>
+      <label class="f">Budget (USD)<input class="ds-input" name="budget" type="number" min="0" step="1"></label>
+      <label class="f">Spent so far (USD)<input class="ds-input" name="spent" type="number" min="0" step="1"></label>
+      <label class="f full">Join link (optional, https)<input class="ds-input" name="joinUrl" type="url" placeholder="https://app.sideshift.app/campaigns"></label>
+      <p class="section-label full">Brand contract</p>
+      <label class="f">Status
+        <select class="ds-input" name="cStatus">
+          <option value="none">Not on file</option><option value="negotiating">Negotiating</option>
+          <option value="sent">Sent, not signed</option><option value="signed">Signed</option>
+        </select>
+      </label>
+      <label class="f">Signed on<input class="ds-input" name="cSignedAt" type="date"></label>
+      <label class="f">Term (months)<input class="ds-input" name="cTerm" type="number" min="0" step="1"></label>
+      <label class="f">Signed by<input class="ds-input" name="cSigner" maxlength="80"></label>
+      <label class="f full">Contract link (https)<input class="ds-input" name="cUrl" type="url" placeholder="https://drive.google.com/..."></label>
+      <label class="f full">Notes<textarea class="ds-input" name="notes" maxlength="500"></textarea></label>
+    </div>
+    <div class="err" id="edit-err"></div>
+    <div class="row-between">
+      <button class="ds-control" type="button" id="edit-cancel">Cancel</button>
+      <button class="ds-btn" type="submit" id="edit-save"><span class="ds-btn-label">Save</span></button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const DAY = 86400000;
+const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} } };
+
+// ---------- Time helpers ----------
+const parseDay = d => d ? new Date(d + 'T00:00:00') : null;
+const endMoment = d => d ? new Date(d + 'T23:59:59') : null;
+function runningFor(startsAt) {
+  const s = parseDay(startsAt); if (!s) return null;
+  const days = Math.floor((Date.now() - s) / DAY);
+  if (days < 0) return { text: `Starts in ${-days}d`, days };
+  if (days < 1) return { text: 'Started today', days };
+  if (days < 60) return { text: `${days} day${days === 1 ? '' : 's'}`, days };
+  return { text: `${Math.floor(days / 30.44)} mo ${Math.round(days % 30.44)}d`, days };
+}
+function timeLeft(endsAt, long) {
+  const e = endMoment(endsAt); if (!e) return null;
+  let ms = e - Date.now();
+  if (ms <= 0) return { text: 'Ended', ms: 0 };
+  const d = Math.floor(ms / DAY); ms -= d * DAY;
+  const h = Math.floor(ms / 3600000); ms -= h * 3600000;
+  const m = Math.floor(ms / 60000); const s = Math.floor((ms - m * 60000) / 1000);
+  const pad = n => String(n).padStart(2, '0');
+  return { text: long ? `${d}d ${pad(h)}h ${pad(m)}m ${pad(s)}s` : (d >= 1 ? `${d}d ${h}h` : `${h}h ${pad(m)}m`), ms: e - Date.now(), days: d };
+}
+const fmtDate = d => d ? parseDay(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+const money = n => n == null ? null : '$' + Math.round(n).toLocaleString('en-US');
+const PLAT = { tiktok: 'TikTok', instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube', snapchat: 'Snapchat', x: 'X' };
+const TYPE = { ugc: ['UGC', 'ds-pill--blue'], influencer: ['Influencer', 'ds-pill--purple'] };
+const typePill = t => { const [l, c] = TYPE[t] || [t || 'Campaign', '']; return `<span class="ds-pill ${c}">${esc(l)}</span>`; };
+
+// Countdown cells re-render every second.
+function tickCountdowns() {
+  document.querySelectorAll('[data-ends]').forEach(el => {
+    const t = timeLeft(el.dataset.ends, el.dataset.long === '1');
+    if (t) el.textContent = t.text;
+  });
+}
+setInterval(tickCountdowns, 1000);
+
+// ---------- Tabs ----------
+function show(which) {
+  $('#tab-board').setAttribute('aria-selected', which === 'board');
+  $('#tab-team').setAttribute('aria-selected', which === 'team');
+  $('#board').hidden = which !== 'board';
+  $('#team').hidden = which !== 'team';
+  if (location.hash !== '#' + which) history.replaceState(null, '', which === 'board' ? location.pathname : '#team');
+  if (which === 'team') openTeam();
+}
+$('#tab-board').onclick = () => show('board');
+$('#tab-team').onclick = () => show('team');
+function segmented(sel, onChange) {
+  const box = $(sel);
+  box.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    box.querySelectorAll('button').forEach(x => x.setAttribute('aria-selected', x === b));
+    onChange(b.dataset.v);
+  });
+}
+
+// ---------- Creator board ----------
+let board = [], boardType = '';
+async function loadBoard() {
+  try {
+    const r = await fetch('/api/campaigns', { cache: 'no-store' });
+    const d = await r.json();
+    board = d.campaigns || [];
+    $('#board-foot').textContent = d.syncedAt ? `Creator counts from SideShift, updated ${new Date(d.syncedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}. Pay, brief and full requirements are in the SideShift app.` : '';
+  } catch { board = []; $('#board-foot').textContent = 'Could not load campaigns. Try again in a minute.'; }
+  renderBoard();
+}
+function renderBoard() {
+  const q = $('#board-q').value.trim().toLowerCase();
+  const list = board.filter(c => (!boardType || c.type === boardType) && (!q || (c.brand + ' ' + c.name).toLowerCase().includes(q)))
+    .sort((a, b) => (b.spotsOpen ?? -1) - (a.spotsOpen ?? -1));
+  const spots = board.reduce((n, c) => n + (c.spotsOpen || 0), 0);
+  const endingSoon = board.filter(c => { const t = timeLeft(c.endsAt); return t && t.ms > 0 && t.days < 14; }).length;
+  $('#board-hero').innerHTML = `
+    <div class="ds-panel-dark"><span class="ds-label">Open spots</span><span class="ds-stat-xl">${spots.toLocaleString()}</span></div>
+    <div><span class="ds-label">Campaigns open</span><span class="ds-stat">${board.length}</span></div>
+    <div><span class="ds-label">Brands</span><span class="ds-stat">${new Set(board.map(c => c.brand)).size}</span></div>
+    <div><span class="ds-label">Ending in 2 weeks</span><span class="ds-stat">${endingSoon}</span></div>`;
+  if (!list.length) {
+    $('#board-grid').innerHTML = `<div class="ds-card empty" style="grid-column:1/-1">
+      <span class="ds-heading">${board.length ? 'No campaigns match that search' : 'No open campaigns listed right now'}</span>
+      <span class="ds-body muted">${board.length ? 'Try another brand or clear the filter.' : 'New campaigns land in #campaign-opportunities first. Check back soon.'}</span></div>`;
+    return;
+  }
+  $('#board-grid').innerHTML = list.map(c => {
+    const run = runningFor(c.startsAt), left = timeLeft(c.endsAt);
+    const full = c.spotsOpen === 0;
+    const fill = c.targetCreators ? Math.min(100, Math.round(c.activeCreators / c.targetCreators * 100)) : null;
+    return `<article class="ds-card camp">
+      <div class="camp-head">
+        <div><span class="ds-label">${esc(c.brand)}</span><h3 class="ds-heading">${esc(c.name)}</h3></div>
+        ${full ? '<span class="ds-status"><span class="dot"></span>Full</span>' : '<span class="ds-status ds-status--green"><span class="dot"></span>Open</span>'}
+      </div>
+      <div class="tags">${typePill(c.type)}${c.platforms.map(p => `<span class="chip">${esc(PLAT[p] || p)}</span>`).join('')}</div>
+      <div class="ds-stat-row stats">
+        <div><span class="ds-label">Open spots</span><span class="ds-stat">${c.spotsOpen == null ? '<span class="tbd">Ask us</span>' : c.spotsOpen}</span></div>
+        <div><span class="ds-label">Running</span><span class="ds-stat">${run ? esc(run.text) : '<span class="tbd">—</span>'}</span></div>
+        <div><span class="ds-label">Time left</span><span class="ds-stat countdown" ${left && left.ms > 0 ? `data-ends="${esc(c.endsAt)}"` : ''}>${left ? esc(left.text) : '<span class="tbd">Ongoing</span>'}</span></div>
+      </div>
+      ${fill != null ? `<div style="display:grid;gap:6px"><div class="row-between"><span class="ds-label">${c.activeCreators} of ${c.targetCreators} creators on board</span><span class="ds-label">${fill}%</span></div><div class="meter"><span style="width:${fill}%"></span></div></div>` : ''}
+      <div class="row-between">
+        <span class="ds-label">${c.endsAt ? 'Ends ' + fmtDate(c.endsAt) : c.startsAt ? 'Started ' + fmtDate(c.startsAt) : ''}</span>
+        <a class="ds-btn ds-btn--blue" href="${esc(c.joinUrl)}" target="_blank" rel="noopener"><span class="ds-btn-label">${full ? 'Join waitlist' : 'Apply in app'}</span></a>
+      </div>
+    </article>`;
+  }).join('');
+}
+$('#board-q').addEventListener('input', renderBoard);
+segmented('#board-type', v => { boardType = v; renderBoard(); });
+
+// ---------- Team ----------
+let team = null, teamFilter = '';
+const tok = () => store.get('ocd-team-token');
+async function api(method, body) {
+  const r = await fetch('/api/team', { method, cache: 'no-store',
+    headers: { 'x-team-token': tok() || '', ...(body ? { 'content-type': 'application/json' } : {}) },
+    body: body ? JSON.stringify(body) : undefined });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) { const e = new Error(d.error || 'Request failed'); e.status = r.status; throw e; }
+  return d;
+}
+async function openTeam() {
+  if (!tok()) { $('#lock').hidden = false; $('#team-body').hidden = true; return; }
+  try {
+    team = await api('GET');
+    $('#lock').hidden = true; $('#team-body').hidden = false;
+    renderTeam();
+  } catch (e) {
+    if (e.status === 401) store.set('ocd-team-token', null);
+    $('#lock').hidden = false; $('#team-body').hidden = true;
+    $('#lock-err').textContent = e.status === 401 ? 'That token did not work.' : 'Could not load the team view.';
+  }
+}
+$('#lock').addEventListener('submit', e => {
+  e.preventDefault(); $('#lock-err').textContent = '';
+  const v = $('#token').value.trim(); if (!v) return;
+  store.set('ocd-team-token', v); $('#token').value = ''; openTeam();
+});
+$('#signout').onclick = () => { store.set('ocd-team-token', null); team = null; openTeam(); };
+
+const missing = c => {
+  const t = c.team || {}, m = [];
+  if (t.targetCreators == null) m.push('target');
+  if (t.budget == null) m.push('budget');
+  if (!(t.endsAt || c.endsAt)) m.push('end date');
+  if (!t.contract || t.contract.status !== 'signed') m.push('contract');
+  return m;
+};
+const CSTAT = { signed: ['Signed', 'ds-status--green'], sent: ['Sent', 'ds-status--blue'], negotiating: ['Negotiating', 'ds-status--amber'], none: ['Not on file', 'ds-status--gray'] };
+
+function renderTeam() {
+  const all = team.campaigns || [];
+  const q = $('#team-q').value.trim().toLowerCase();
+  const list = all.filter(c => (!q || (c.brand + ' ' + c.name).toLowerCase().includes(q))
+    && (teamFilter !== 'board' || c.team?.showOnBoard) && (teamFilter !== 'missing' || missing(c).length))
+    .sort((a, b) => a.brand.localeCompare(b.brand) || a.name.localeCompare(b.name));
+  const sum = f => all.reduce((n, c) => n + (f(c) || 0), 0);
+  const withTarget = all.filter(c => c.team?.targetCreators != null);
+  const spots = withTarget.reduce((n, c) => n + Math.max(0, c.team.targetCreators - c.activeCreators), 0);
+  const budget = sum(c => c.team?.budget), signed = all.filter(c => c.team?.contract?.status === 'signed').length;
+  $('#team-hero').innerHTML = `
+    <div class="ds-panel-dark"><span class="ds-label">Open spots</span><span class="ds-stat-xl">${spots.toLocaleString()}</span><span class="ds-label">${withTarget.length} of ${all.length} campaigns have a target</span></div>
+    <div><span class="ds-label">Active creators</span><span class="ds-stat">${sum(c => c.activeCreators).toLocaleString()}</span><span class="ds-label">${sum(c => c.pendingCreators).toLocaleString()} pending invites</span></div>
+    <div><span class="ds-label">Budget entered</span><span class="ds-stat">${budget ? money(budget) : '—'}</span><span class="ds-label">${money(sum(c => c.team?.spent)) || '$0'} spent</span></div>
+    <div><span class="ds-label">Brand contracts signed</span><span class="ds-stat">${signed} / ${all.length}</span></div>`;
+
+  $('#team-rows').innerHTML = list.length ? list.map(c => {
+    const t = c.team || {}, run = runningFor(c.startsAt), end = t.endsAt || c.endsAt, left = timeLeft(end, true);
+    const target = t.targetCreators, open = target == null ? null : Math.max(0, target - c.activeCreators);
+    const fill = target ? Math.round(c.activeCreators / target * 100) : null;
+    const used = t.budget ? Math.round((t.spent || 0) / t.budget * 100) : null;
+    const k = t.contract || {}, [cl, cc] = CSTAT[k.status] || CSTAT.none;
+    const miss = missing(c);
+    return `<tr>
+      <td><div style="font-weight:600">${esc(c.brand)}</div><div>${esc(t.displayName || c.name)}</div>
+        <div class="tags" style="margin-top:6px">${typePill(c.type)}${t.showOnBoard ? '<span class="chip">On board</span>' : ''}</div>
+        ${miss.length ? `<div class="sub">Missing: ${esc(miss.join(', '))}</div>` : ''}</td>
+      <td class="num"><div class="ds-stat" style="font-size:15px">${c.activeCreators}${target != null ? ` / ${target}` : ''}</div>
+        <div class="sub">${c.pendingCreators} pending</div>
+        ${fill != null ? `<div class="meter${fill > 100 ? ' over' : ''}" style="margin-top:6px;width:96px"><span style="width:${Math.min(100, fill)}%"></span></div>` : ''}</td>
+      <td class="num">${open == null ? '<span class="tbd">Set target</span>' : `<span class="ds-stat" style="font-size:15px">${open}</span>`}</td>
+      <td class="num">${run ? esc(run.text) : '—'}<div class="sub">${c.startsAt ? 'since ' + fmtDate(c.startsAt) : ''}</div></td>
+      <td class="num">${left ? `<span class="countdown" ${left.ms > 0 ? `data-ends="${esc(end)}" data-long="1"` : ''}>${esc(left.text)}</span><div class="sub">ends ${fmtDate(end)}</div>` : '<span class="tbd">No end date</span>'}</td>
+      <td class="num">${t.budget != null ? `${money(t.budget)}<div class="sub">${money(t.spent || 0)} spent${used != null ? ` · ${used}%` : ''}</div>
+        <div class="meter${used > 100 ? ' over' : used > 85 ? ' warn' : ''}" style="margin-top:6px;width:96px"><span style="width:${Math.min(100, used)}%"></span></div>` : '<span class="tbd">TBD</span>'}</td>
+      <td><span class="ds-status ${cc}"><span class="dot"></span>${cl}</span>
+        <div class="sub">${[k.signedAt && 'Signed ' + fmtDate(k.signedAt), k.termMonths && k.termMonths + '-month term', k.signer].filter(Boolean).map(esc).join(' · ')}</div>
+        ${k.url ? `<div class="sub"><a href="${esc(k.url)}" target="_blank" rel="noopener">Open contract</a></div>` : ''}</td>
+      <td><button class="ds-control" data-edit="${esc(c.id)}">Edit</button></td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="8"><div class="empty"><span class="ds-heading">${all.length ? 'Nothing matches' : 'No campaigns synced yet'}</span><span class="ds-body muted">${all.length ? 'Clear the search or filter.' : 'Run the SideShift sync in REFRESH.md to load campaigns.'}</span></div></td></tr>`;
+  $('#team-foot').textContent = team.syncedAt ? `Creator counts and start dates synced from SideShift ${new Date(team.syncedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}. Budget, target, end date and brand contract are entered by the team.` : '';
+}
+$('#team-q').addEventListener('input', () => team && renderTeam());
+segmented('#team-filter', v => { teamFilter = v; team && renderTeam(); });
+
+// ---------- Editor ----------
+let editing = null;
+$('#team-rows').addEventListener('click', e => {
+  const id = e.target.closest('[data-edit]')?.dataset.edit; if (!id) return;
+  editing = team.campaigns.find(c => c.id === id); if (!editing) return;
+  const t = editing.team || {}, k = t.contract || {}, f = $('#edit-form').elements;
+  $('#edit-title').textContent = editing.brand + ' · ' + editing.name;
+  $('#edit-sub').textContent = `${editing.activeCreators} active, ${editing.pendingCreators} pending in SideShift`;
+  f.showOnBoard.checked = !!t.showOnBoard; f.displayName.value = t.displayName || '';
+  f.targetCreators.value = t.targetCreators ?? ''; f.endsAt.value = t.endsAt || editing.endsAt || '';
+  f.budget.value = t.budget ?? ''; f.spent.value = t.spent ?? ''; f.joinUrl.value = t.joinUrl || '';
+  f.cStatus.value = k.status || 'none'; f.cSignedAt.value = k.signedAt || ''; f.cTerm.value = k.termMonths ?? '';
+  f.cSigner.value = k.signer || ''; f.cUrl.value = k.url || ''; f.notes.value = t.notes || '';
+  $('#edit-err').textContent = '';
+  $('#editor').showModal();
+});
+$('#edit-cancel').onclick = () => $('#editor').close();
+$('#edit-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const f = e.target.elements;
+  const body = { id: editing.id, team: {
+    showOnBoard: f.showOnBoard.checked, displayName: f.displayName.value, targetCreators: f.targetCreators.value,
+    endsAt: f.endsAt.value, budget: f.budget.value, spent: f.spent.value, joinUrl: f.joinUrl.value, notes: f.notes.value,
+    contract: { status: f.cStatus.value, signedAt: f.cSignedAt.value, termMonths: f.cTerm.value, signer: f.cSigner.value, url: f.cUrl.value } } };
+  $('#edit-save').disabled = true;
+  try {
+    const d = await api('PATCH', body);
+    Object.assign(editing, d.campaign);
+    $('#editor').close(); renderTeam(); loadBoard();
+  } catch (err) { $('#edit-err').textContent = err.message; }
+  finally { $('#edit-save').disabled = false; }
+});
+
+loadBoard();
+const fromHash = () => show(location.hash === '#team' ? 'team' : 'board');
+window.addEventListener('hashchange', fromHash);
+fromHash();
+</script>
+</body>
+</html>
