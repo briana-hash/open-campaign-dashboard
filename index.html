@@ -43,6 +43,7 @@
   .empty { padding: 40px 24px; text-align: center; display: grid; gap: 8px; justify-items: center; }
   .foot { margin-top: 24px; }
   .countdown { font-variant-numeric: tabular-nums; }
+  .ds-status { white-space: nowrap; }
   .ds-status--amber { --c: var(--ds-amber); }
   .ds-status--gray { --c: var(--ds-gray); }
   .ds-status--blue { --c: var(--ds-blue); }
@@ -370,6 +371,7 @@ function renderTeam() {
     return `<tr>
       <td><div style="font-weight:600">${esc(c.brand)}</div><div>${esc(t.displayName || c.name)}</div>
         <div class="tags" style="margin-top:6px">${typePill(c.type)}${t.showOnBoard ? '<span class="chip">On board</span>' : ''}</div>
+        ${t.notes ? `<div class="sub" style="max-width:280px;color:var(--ds-text-primary)">${esc(t.notes)}</div>` : ''}
         ${miss.length ? `<div class="sub">Missing: ${esc(miss.join(', '))}</div>` : ''}</td>
       <td class="num"><div class="ds-stat" style="font-size:15px">${c.activeCreators}${target != null ? ` / ${target}` : ''}</div>
         <div class="sub">${c.pendingCreators} pending</div>
@@ -378,7 +380,8 @@ function renderTeam() {
       <td class="num">${run ? esc(run.text) : '—'}<div class="sub">${c.startsAt ? 'since ' + fmtDate(c.startsAt) : ''}</div></td>
       <td class="num">${left ? `<span class="countdown" ${left.ms > 0 ? `data-ends="${esc(end)}" data-long="1"` : ''}>${esc(left.text)}</span><div class="sub">ends ${fmtDate(end)}</div>` : '<span class="tbd">No end date</span>'}</td>
       <td class="num">${t.budget != null ? `${money(t.budget)}<div class="sub">${money(t.spent || 0)} spent${used != null ? ` · ${used}%` : ''}</div>
-        <div class="meter${used > 100 ? ' over' : used > 85 ? ' warn' : ''}" style="margin-top:6px;width:96px"><span style="width:${Math.min(100, used)}%"></span></div>` : '<span class="tbd">TBD</span>'}</td>
+        <div class="meter${used > 100 ? ' over' : used > 85 ? ' warn' : ''}" style="margin-top:6px;width:96px"><span style="width:${Math.min(100, used)}%"></span></div>`
+        : `<span class="tbd">TBD</span>${t.spent ? `<div class="sub">${money(t.spent)} spent</div>` : ''}`}</td>
       <td><span class="ds-status ${cc}"><span class="dot"></span>${cl}</span>
         <div class="sub">${[k.signedAt && 'Signed ' + fmtDate(k.signedAt), k.termMonths && k.termMonths + '-month term', k.signer].filter(Boolean).map(esc).join(' · ')}</div>
         ${k.url ? `<div class="sub"><a href="${esc(k.url)}" target="_blank" rel="noopener">Open contract</a></div>` : ''}</td>
