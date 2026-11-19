@@ -142,7 +142,7 @@
       <div class="ds-card table-card">
         <table>
           <thead><tr>
-            <th>Campaign</th><th>Creators</th><th>Open spots</th><th>Running</th><th>Time left</th>
+            <th>Campaign</th><th>Managers</th><th>Creators</th><th>Open spots</th><th>Running</th><th>Time left</th>
             <th>Budget</th><th>Brand contract</th><th></th>
           </tr></thead>
           <tbody id="team-rows"></tbody>
@@ -341,6 +341,7 @@ const missing = c => {
   if (t.budget == null) m.push('budget');
   if (!(t.endsAt || c.endsAt)) m.push('end date');
   if (!t.contract || t.contract.status !== 'signed') m.push('contract');
+  if (!(c.managers || []).length) m.push('manager');
   return m;
 };
 const CSTAT = { signed: ['Signed', 'ds-status--green'], sent: ['Sent', 'ds-status--blue'], negotiating: ['Negotiating', 'ds-status--amber'], none: ['Not on file', 'ds-status--gray'] };
@@ -348,7 +349,8 @@ const CSTAT = { signed: ['Signed', 'ds-status--green'], sent: ['Sent', 'ds-statu
 function renderTeam() {
   const all = team.campaigns || [];
   const q = $('#team-q').value.trim().toLowerCase();
-  const list = all.filter(c => (!q || (c.brand + ' ' + c.name).toLowerCase().includes(q))
+  const hay = c => [c.brand, c.name, c.owner, ...(c.managers || []).map(m => m.name)].join(' ').toLowerCase();
+  const list = all.filter(c => (!q || hay(c).includes(q))
     && (teamFilter !== 'board' || c.team?.showOnBoard) && (teamFilter !== 'missing' || missing(c).length))
     .sort((a, b) => a.brand.localeCompare(b.brand) || a.name.localeCompare(b.name));
   const sum = f => all.reduce((n, c) => n + (f(c) || 0), 0);
@@ -369,10 +371,14 @@ function renderTeam() {
     const k = t.contract || {}, [cl, cc] = CSTAT[k.status] || CSTAT.none;
     const miss = missing(c);
     return `<tr>
-      <td><div style="font-weight:600">${esc(c.brand)}</div><div>${esc(t.displayName || c.name)}</div>
+      <td style="min-width:280px"><div style="font-weight:600">${esc(c.brand)}</div><div>${esc(t.displayName || c.name)}</div>
         <div class="tags" style="margin-top:6px">${typePill(c.type)}${t.showOnBoard ? '<span class="chip">On board</span>' : ''}</div>
         ${t.notes ? `<div class="sub" style="max-width:280px;color:var(--ds-text-primary)">${esc(t.notes)}</div>` : ''}
         ${miss.length ? `<div class="sub">Missing: ${esc(miss.join(', '))}</div>` : ''}</td>
+      <td style="min-width:150px">${(c.managers || []).length
+          ? c.managers.map(m => `<div title="Managing since ${esc(fmtDate(m.since))}">${esc(m.name)}${m.assigned ? ' <span class="chip" style="height:18px">Assigned</span>' : ''}</div>`).join('')
+          : '<span class="tbd">None right now</span>'}
+        ${c.owner ? `<div class="sub">SideShift lead: ${esc(c.owner)}</div>` : ''}</td>
       <td class="num"><div class="ds-stat" style="font-size:15px">${c.activeCreators}${target != null ? ` / ${target}` : ''}</div>
         <div class="sub">${c.pendingCreators} pending</div>
         ${fill != null ? `<div class="meter${fill > 100 ? ' over' : ''}" style="margin-top:6px;width:96px"><span style="width:${Math.min(100, fill)}%"></span></div>` : ''}</td>
@@ -387,7 +393,7 @@ function renderTeam() {
         ${k.url ? `<div class="sub"><a href="${esc(k.url)}" target="_blank" rel="noopener">Open contract</a></div>` : ''}</td>
       <td><button class="ds-control" data-edit="${esc(c.id)}">Edit</button></td>
     </tr>`;
-  }).join('') : `<tr><td colspan="8"><div class="empty"><span class="ds-heading">${all.length ? 'Nothing matches' : 'No campaigns synced yet'}</span><span class="ds-body muted">${all.length ? 'Clear the search or filter.' : 'Run the SideShift sync in REFRESH.md to load campaigns.'}</span></div></td></tr>`;
+  }).join('') : `<tr><td colspan="9"><div class="empty"><span class="ds-heading">${all.length ? 'Nothing matches' : 'No campaigns synced yet'}</span><span class="ds-body muted">${all.length ? 'Clear the search or filter.' : 'Run the SideShift sync in REFRESH.md to load campaigns.'}</span></div></td></tr>`;
   $('#team-foot').textContent = team.syncedAt ? `Creator counts and start dates synced from SideShift ${new Date(team.syncedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}. Budget, target, end date and brand contract are entered by the team.` : '';
 }
 $('#team-q').addEventListener('input', () => team && renderTeam());

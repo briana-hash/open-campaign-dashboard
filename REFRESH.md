@@ -34,7 +34,26 @@ group by 1;
 
 A campaign with no rows has 0 active and 0 pending.
 
-## 3. Push
+## 3. Managers
+
+Current campaign managers (not stale, no end date or an end date in the future) and the SideShift lead who signed the campaign's creator contract:
+
+```sql
+select c.id, c.campaign_manager_signed_name as owner,
+  coalesce((select json_agg(json_build_object(
+      'name', coalesce(nullif(trim(p.name), ''), 'Unnamed'),
+      'since', m.credit_starts_at::date,
+      'assigned', m.source = 'linked') order by m.credit_starts_at)
+    from campaign_manager_campaigns m join persons p on p.id = m.person_id
+    where m.campaign_id = c.id and not m.stale
+      and (m.credit_ends_at is null or m.credit_ends_at > now())), '[]') as managers
+from campaigns c
+where c.id in (/* ids from step 1 */);
+```
+
+`assigned` is true when SideShift has the manager explicitly linked to the campaign; otherwise SideShift inferred it. Managers show in the Team tab only, never on the public board.
+
+## 4. Push
 
 Build this shape (dates as `YYYY-MM-DD`):
 
@@ -42,7 +61,8 @@ Build this shape (dates as `YYYY-MM-DD`):
 { "campaigns": [
   { "id": "...", "companyId": "...", "brand": "...", "name": "...", "type": "ugc",
     "status": "active", "startsAt": "2026-11-01", "endsAt": null,
-    "platforms": ["tiktok", "instagram"], "activeCreators": 20, "pendingCreators": 0 }
+    "platforms": ["tiktok", "instagram"], "activeCreators": 20, "pendingCreators": 0,
+    "owner": "...", "managers": [{ "name": "...", "since": "2026-11-01", "assigned": false }] }
 ] }
 ```
 

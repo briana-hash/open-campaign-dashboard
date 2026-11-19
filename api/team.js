@@ -33,6 +33,10 @@ function syncedFields(c) {
     platforms: Array.isArray(c.platforms) ? c.platforms.map(p => clean(p, 20)).slice(0, 8) : [],
     startsAt: dateOnly(c.startsAt), endsAt: dateOnly(c.endsAt),
     activeCreators: num(c.activeCreators) ?? 0, pendingCreators: num(c.pendingCreators) ?? 0,
+    // SideShift person who signed the campaign's creator contract, and the current campaign managers.
+    owner: clean(c.owner, 80) || null,
+    managers: Array.isArray(c.managers) ? c.managers.slice(0, 30).map(m => ({
+      name: clean(m.name, 80), since: dateOnly(m.since), assigned: !!m.assigned })).filter(m => m.name) : [],
   };
 }
 
